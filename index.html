@@ -695,11 +695,11 @@
       <div class="row row-left" style="margin-top:12px;">
         <span class="controls-label">Topic</span>
         <select id="topicSelect" class="select">
-          <option selected>DSR – US expansion</option>
-          <option>ESM-Free pitch</option>
-          <option>SAS pitch</option>
-          <option>FBA optimisation</option>
-          <option>Black Friday deals</option>
+          <option value="dsr" selected>DSR – US expansion</option>
+          <option value="esm">ESM-Free pitch</option>
+          <option value="sas">SAS pitch</option>
+          <option value="fba">FBA optimisation</option>
+          <option value="bfd">Black Friday deals</option>
         </select>
       </div>
     </div>
@@ -824,7 +824,7 @@ function resetSessionId() {
 }
 
 /* ========= CONFIG ========= */
-const N8N_WEBHOOK_URL = "https://charly0811000312.app.n8n.cloud/webhook/0de3bb25-3907-4e12-889c-e262e4d78f78";
+const N8N_WEBHOOK_URL = "https://charly0811000312.app.n8n.cloud/webhook/d05c8ca6-0dd1-4479-8606-33b0f885a7f9";
 
 /* ========= Foggy sphere ========= */
 const canvas = document.getElementById('fog');
@@ -994,6 +994,10 @@ function getTopic(){
   return opt ? opt.text : '';
 }
 
+function getTopicKey() {
+  return topicSelect.value || 'dsr';
+}
+
 function renderTranscript(){
   dialogueEl.innerHTML = '';
   conversation.forEach(msg => {
@@ -1050,14 +1054,15 @@ async function sendMessageToPersona(text, mode='answer'){
 
   confirmBtn.disabled = true;
   const payload = {
-    sessionId: SESSION_ID,
-    text,
-    persona: getPersonaKey(),
-    difficulty: getDifficulty(),
-    topic: getTopic(),
-    mode,
-    sellerPersona: currentSellerPersona || undefined
-  };
+  sessionId: SESSION_ID,
+  text,
+  persona: getPersonaKey(),
+  difficulty: getDifficulty(),
+  topic: getTopic(),        // human readable label ("SAS pitch")
+  topicKey: getTopicKey(),  // NEW: stable internal key ("sas")
+  mode,
+  sellerPersona: currentSellerPersona || undefined
+};
   const data = await callN8N(payload);
   const msg = data.reply || data.answer || data.message || '(no reply)';
   const lumiLabel = `Seller – LUMI (${getPersonaShort()})`;
